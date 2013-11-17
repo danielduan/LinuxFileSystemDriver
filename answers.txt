@@ -11,14 +11,14 @@
 # information you'd like us to know, please add it at the end of the file.
 
 # Partner 1
-Name: 
-Student ID: 
+Name: Jia Dan Duan
+Student ID: 604022222
 Email: 
 
 # Partner 2 (if you're working in a team)
-Name: 
-Student ID: 
-Email: 
+Name: Kenneth Shi
+Student ID: 304063313
+Email: kenshi@ucla.edu
 
 # Extra credit problems
 #Extra credit problem: none
