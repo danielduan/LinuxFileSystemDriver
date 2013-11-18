@@ -1194,7 +1194,19 @@ ospfs_create(struct inode *dir, struct dentry *dentry, int mode, struct nameidat
 	ospfs_inode_t *dir_oi = ospfs_inode(dir->i_ino);
 	uint32_t entry_ino = 0;
 	/* EXERCISE: Your code here. */
-	return -EINVAL; // Replace this line
+	//Check type of directory
+	if (dir_oi->oi_ftype != OSPFS_FTYPE_DIR)
+		return –EIO;
+	
+	if (dentry->d_name.len > OSPFS_MAXNAMELEN) 
+		return –ENAMETOOLONG;
+
+	if (find_dir_entry(dir_oi, dentry->d_name, name, dentry->d_name.len) != NULL)
+		return –EEXIST;
+
+	//Get a free inode
+	
+	//Find/create empty directory
 
 	/* Execute this code after your function has successfully created the
 	   file.  Set entry_ino to the created file's inode number before
