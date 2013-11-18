@@ -601,6 +601,14 @@ static uint32_t
 allocate_block(void)
 {
 	/* EXERCISE: Your code here */
+	void *free_map = ospfs_block(OSPFS_FREEMAP_BLK);
+	uint32_t i;
+	for(i = OSPFS_FREEMAP_BLK; i < ospfs_super->os_nblocks; i++){
+		if(bitvector_test(free_map,i)){
+			bitvector_clear(free_map,i);
+			return i;
+		}
+	}
 	return 0;
 }
 
@@ -620,6 +628,8 @@ static void
 free_block(uint32_t blockno)
 {
 	/* EXERCISE: Your code here */
+	void *free_map = ospfs_block(OSPFS_FREEMAP_BLK);
+	bitvector_set(free_map,blockno);
 }
 
 
