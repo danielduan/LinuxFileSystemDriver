@@ -828,16 +828,25 @@ change_size(ospfs_inode_t *oi, uint32_t new_size)
 
 	while (ospfs_size2nblocks(oi->oi_size) < ospfs_size2nblocks(new_size)) {
 	        /* EXERCISE: Your code here */
-		return -EIO; // Replace this line
+		r = add_block(oi);
+		if(r == -ENOSPC){
+			new_size = old_size;
+			break;
+		}
+		if(r == -EIO)
+			return r; // Replace this line
 	}
 	while (ospfs_size2nblocks(oi->oi_size) > ospfs_size2nblocks(new_size)) {
 	        /* EXERCISE: Your code here */
-		return -EIO; // Replace this line
+		r = remove_block(oi);
+		if(r == -EIO)
+			return r; // Replace this line
 	}
 
 	/* EXERCISE: Make sure you update necessary file meta data
 	             and return the proper value. */
-	return -EIO; // Replace this line
+	oi->oi_size = new_size;
+	return r; // Replace this line
 }
 
 
@@ -907,8 +916,10 @@ ospfs_read(struct file *filp, char __user *buffer, size_t count, loff_t *f_pos)
 	//Prevent overflow as covered in discussion
 	if(*f_pos + count < *f_pos)
 		return -EIO;
+
 	else if(*f_pos >= oi->oi_size)
 		count = 0;
+
 	else if(*f_pos + count >= oi->oi_size)
 		count = oi->oi_size- *f_pos;
 
@@ -917,9 +928,11 @@ ospfs_read(struct file *filp, char __user *buffer, size_t count, loff_t *f_pos)
 		uint32_t blockno = ospfs_inode_blockno(oi, *f_pos);
 		uint32_t n;
 		char *data;
+
 		//Added variables
 		uint32_t data_offset;
 		uint32_t bytes_left = count - amount;
+
 		// ospfs_inode_blockno returns 0 on error
 		if (blockno == 0) {
 			retval = -EIO;
@@ -935,10 +948,13 @@ ospfs_read(struct file *filp, char __user *buffer, size_t count, loff_t *f_pos)
 		/* EXERCISE: Your code here */
 		data_offset = *f_pos % OSPFS_BLKSIZE;
 		n = OSPFS_BLKSIZE - data_offset;
+
 		if(n > bytes_left)
 			n = bytes_left;
+
 		if(copy_to_user(buffer,data+data_offset,n)>0)
 			return -EFAULT;
+
 		buffer += n;
 		amount += n;
 		*f_pos += n;
@@ -979,15 +995,30 @@ ospfs_write(struct file *filp, const char __user *buffer, size_t count, loff_t *
 	// use struct file's f_flags field and the O_APPEND bit.
 	/* EXERCISE: Your code here */
 
+    if(filp->f_flags & O_APPEND)
+        *f_pos = oi->oi_size;
+
 	// If the user is writing past the end of the file, change the file's
 	// size to accomodate the request.  (Use change_size().)
 	/* EXERCISE: Your code here */
+
+    //Prevent overflow as covered in discussion
+	if(*f_pos + count < *f_pos)
+		return -EIO;
+	else if (*f_pos + count >= oi->oi_size)
+		retval = change_size(oi,*f_pos + count);
+	if(retval < 0)
+		goto done;
 
 	// Copy data block by block
 	while (amount < count && retval >= 0) {
 		uint32_t blockno = ospfs_inode_blockno(oi, *f_pos);
 		uint32_t n;
 		char *data;
+
+		//Added variables
+		uint32_t data_offset;
+		uint32_t bytes_left = count - amount;
 
 		if (blockno == 0) {
 			retval = -EIO;
@@ -1001,8 +1032,17 @@ ospfs_write(struct file *filp, const char __user *buffer, size_t count, loff_t *
 		// read user space.
 		// Keep track of the number of bytes moved in 'n'.
 		/* EXERCISE: Your code here */
-		retval = -EIO; // Replace these lines
-		goto done;
+
+		data_offset = (*f_pos % OSPFS_BLKSIZE);
+		n = OSPFS_BLKSIZE - data_offset;
+
+		if(n > bytes_left)
+		n = bytes_left;
+
+		if(copy_from_user(data + data_offset, buffer, n) > 0)
+			return -EFAULT;
+		//retval = -EIO; // Replace these lines
+		//goto done;
 
 		buffer += n;
 		amount += n;
