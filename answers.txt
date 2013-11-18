@@ -24,3 +24,4 @@ Email: kenshi@ucla.edu
 #Extra credit problem: none
 
 # Add any other information you'd like us to know below this line.
+A lot of our code was borrowed from discussion notes, but we made sure we understood what each line was doing. 
