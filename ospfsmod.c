@@ -810,7 +810,7 @@ remove_block(ospfs_inode_t *oi)
 		oi->oi_direct[direct_index(n)] = 0;
 	}
 	//If we're indirect blocks
-	else if(n >= OSPFS_NDIRECT){
+	else if(indir2_index(n) == -1){
 		// Free the block
 		indir_block = ospfs_block(oi->oi_indirect);
         free_block(indir_block[direct_index(n)]);
