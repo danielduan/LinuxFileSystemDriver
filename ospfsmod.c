@@ -1337,8 +1337,22 @@ create_blank_direntry(ospfs_inode_t *dir_oi)
 	//    Use ERR_PTR if this fails; otherwise, clear out all the directory
 	//    entries and return one of them.
 
-	/* EXERCISE: Your code here. */
-	return ERR_PTR(-EINVAL); // Replace this line
+	ospfs_direntry_t *od;
+	//return ERR_PTR(-EINVAL); // Replace this line
+	if (dir_oi -> oi_ftype != OSPFS_FTYPE_DIR) 
+	  return ERR_PTR(-EIO);
+	//if inode number == 0, directory entry empty
+	int offset;
+	for(offset = 0; offset < dir_oi -> oi_size; offset += OSPFS_DIRENTRY_SIZE) {
+	  od = ospfs_inode_data(dir_oi, offset);
+	  if (od -> od_ino == 0)
+	    return od;
+	}
+	uint32_t new_size = (ospfs_size2nblocks(dir_oi -> oi_size)+1)*OSPFS_BLKSIZE;
+	int retval = change_size(dir_oi, new_size);
+	if (retval != 0)
+	  return ERR_PTR(retval);
+	return ospfs_inode_data(dir_oi, offset);
 }
 
 // ospfs_link(src_dentry, dir, dst_dentry
@@ -1452,7 +1466,29 @@ ospfs_create(struct inode *dir, struct dentry *dentry, int mode, struct nameidat
 
 	//Get a free inode
 	
-	//Find/create empty directory
+	while(entry_ino < ospfs_super->os_ninodes){
+	  free_ino = ospfs_inode(entry_ino);
+	  if(free_ino == NULL)
+	    return -EIO;
+	  if(free_ino->oi_nlink == 0)
+	    break;
+	  entry_ino++;
+	}
+	//If we couldn't find a free inode, so return error
+	if (entry_ino == ospfs_super->os_ninodes)
+	  return -ENOSPC;
+	//Initialize the new inode
+	free_ino->oi_size = 0;
+	free_ino->oi_ftype = OSPFS_FTYPE_REG;
+	free_ino->oi_nlink = 1;
+	free_ino->oi_mode = mode;
+	//Create free directory entry
+	ospfs_direntry_t *new_entry = create_blank_direntry(dir_oi);
+	if(IS_ERR(new_entry))
+	  return PTR_ERR(new_entry);
+	new_entry->od_ino = entry_ino;
+	memcpy(new_entry->od_name, dentry->d_name.name, dentry->d_name.len);
+	new_entry->od_name[dentry->d_name.len] = '\0';
 
 	/* Execute this code after your function has successfully created the
 	   file.  Set entry_ino to the created file's inode number before
