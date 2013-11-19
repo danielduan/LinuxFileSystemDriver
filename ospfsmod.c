@@ -1454,6 +1454,10 @@ ospfs_create(struct inode *dir, struct dentry *dentry, int mode, struct nameidat
 	ospfs_inode_t *dir_oi = ospfs_inode(dir->i_ino);
 	uint32_t entry_ino = 0;
 	/* EXERCISE: Your code here. */
+	
+	//Free inode variable free_ino
+        ospfs_inode_t *free_ino;
+        
 	//Check type of directory
 	if (dir_oi->oi_ftype != OSPFS_FTYPE_DIR)
 		return -EIO;
