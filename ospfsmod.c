@@ -845,10 +845,10 @@ add_block(ospfs_inode_t *oi)
 			if((allocated[INDIR_BLOCK] = allocate_block()) == 0) {
 				//handle no space;
 				if(allocated[INDIR_BLOCK] != 0) {
-                                	free_block(allocated[INDIR_BLOCK]);
+                                	free_block(allocated[DINDIR_BLOCK]);
                         	}
                         	if(allocated[DINDIR_2_BLOCK] != 0) { 
-                                	free_block(allocated[INDIR_2_BLOCK]);
+                                	free_block(allocated[DINDIR_2_BLOCK]);
                         	}
                         	return output;
 			}
