@@ -15,7 +15,7 @@ Name: Jia Dan Duan
 Student ID: 604022222
 Email: 
 
-# Partner 2 (if you're working in a team)
+# Partner 2
 Name: Kenneth Shi
 Student ID: 304063313
 Email: kenshi@ucla.edu
@@ -24,4 +24,4 @@ Email: kenshi@ucla.edu
 #Extra credit problem: none
 
 # Add any other information you'd like us to know below this line.
-A lot of our code was borrowed from discussion notes, but we made sure we understood what each line was doing. 
+A lot of our code was borrowed from discussion notes, but we made sure we understood what each line was doing. We had trouble implementing conditional links, and was unsure how to fix the issue. 
