@@ -845,7 +845,7 @@ add_block(ospfs_inode_t *oi)
 			if((allocated[INDIR_BLOCK] = allocate_block()) == 0) {
 				//handle no space;
 				if(allocated[INDIR_BLOCK] != 0) {
-                                	free_block(allocated[DINDIR_BLOCK]);
+                                	free_block(allocated[INDIR_BLOCK]);
                         	}
                         	if(allocated[DINDIR_2_BLOCK] != 0) { 
                                 	free_block(allocated[DINDIR_2_BLOCK]);
@@ -1461,7 +1461,7 @@ ospfs_create(struct inode *dir, struct dentry *dentry, int mode, struct nameidat
 	if (dentry->d_name.len > OSPFS_MAXNAMELEN) 
 		return -ENAMETOOLONG; 
 
-	if (find_dir_entry(dir_oi, dentry->d_name.name, dentry->d_name.len) != NULL)
+	if (find_direntry(dir_oi, dentry->d_name.name, dentry->d_name.len) != NULL)
 		return -EEXIST;
 
 	//Get a free inode
