@@ -795,9 +795,62 @@ remove_block(ospfs_inode_t *oi)
 {
 	// current number of blocks in file
 	uint32_t n = ospfs_size2nblocks(oi->oi_size);
+	uint32_t *indir_block;
+	uint32_t * indir2_block;
 
 	/* EXERCISE: Your code here */
-	return -EIO; // Replace this line
+	//If there are no blocks in the file, return 0
+	if(n == 0)
+		return 0;
+	n--;
+	//If we're in the direct blocks
+	if(indir_index(n) == -1){
+		//Free the current block
+		free_block(oi->oi_direct[direct_index(n)]);
+		oi->oi_direct[direct_index(n)] = 0;
+	}
+	//If we're indirect blocks
+	else if(n >= OSPFS_NDIRECT){
+		// Free the block
+		indir_block = ospfs_block(oi->oi_indirect);
+        free_block(indir_block[direct_index(n)]);
+    	indir_block[n - OSPFS_NDIRECT] = 0;
+    	//If we're on the last block
+    	if(n < OSPFS_NDIRECT){
+			free_block(oi->oi_indirect);
+			oi->oi_indirect = 0;
+		}
+	}
+	//We're using doubly indirect blocks
+	else if(indir2_index(n) == 0){
+		//Set indirect block locations
+		indir2_block = ospfs_block(oi->oi_indirect2);
+		indir_block = ospfs_block(indir2_block[indir_index(n)]);
+
+		//Free the block
+		free_block(indir_block[direct_index(n)]);
+    	indir_block[direct_index(n)] = 0;
+
+    	// Blocks can fit without indir
+		if(indir_index(n - 1) < indir_index(n))
+		{
+		  free_block(indir2_block[indir_index(n)]);
+		  indir2_block[indir_index(n)] = 0;
+		}
+    
+	    // Blocks can fit without indir2
+	    if(indir2_index(n - 1) < 0)
+	    {
+	      free_block(oi->oi_indirect2);
+	      oi->oi_indirect2 = 0;
+	    }
+	}
+	//If using the last direct block
+	//Change size of blocks
+	oi->oi_size = n * OSPFS_BLKSIZE;
+	return 0;
+
+
 }
 
 
@@ -1206,6 +1259,9 @@ ospfs_link(struct dentry *src_dentry, struct inode *dir, struct dentry *dst_dent
 		return -ENAMETOOLONG;
 	if (find_direntry(dir_oi, dst_dentry->d_name.name, dst_dentry->d_name.len != NULL)) 
 		return -EEXIST;
+	//Create new entry
+	new_entry = create_blank_direntry(dir_oi);
+
 	if (IS_ERR(new_entry)) 
 		return PTR_ERR(new_entry);
 	else if (new_entry == NULL)
