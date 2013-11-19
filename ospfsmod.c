@@ -628,8 +628,14 @@ static void
 free_block(uint32_t blockno)
 {
 	/* EXERCISE: Your code here */
-	void *free_map = ospfs_block(OSPFS_FREEMAP_BLK);
-	bitvector_set(free_map,blockno);
+	uint32_t inode_block = ospfs_super->os_firstinob + OSPFS_BLKINODES;
+	void* freenodemap = ospfs_block(OSPFS_FREEMAP_BLK);
+	
+	if (blockno <= inode_block || blockno >= ospfs_super->os_ninodes) {
+		return;
+	}
+	
+	bitvector_set(freenodemap, blockno);	
 }
 
 
