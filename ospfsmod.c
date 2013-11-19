@@ -672,7 +672,9 @@ static int32_t
 indir2_index(uint32_t b)
 {
 	// Your code here.
-	return -1;
+	if(b < OSPFS_NDIRECT + OSPFS_NINDIRECT)
+		return -1;
+	return 0;
 }
 
 
@@ -691,7 +693,14 @@ static int32_t
 indir_index(uint32_t b)
 {
 	// Your code here.
-	return -1;
+	//Check if block is in the inode
+	if(b < OSPFS_NDIRECT)
+		return -1;
+	else if(b < OSPFS_NDIRECT + OSPFS_NINDIRECT)
+		return 0;
+	else
+		(b - (OSPFS_NDIRECT + OSPFS_NINDIRECT))/OSPFS_NINDIRECT;
+
 }
 
 
@@ -708,9 +717,11 @@ static int32_t
 direct_index(uint32_t b)
 {
 	// Your code here.
-	return -1;
+	if(b < OSPFS_NDIRECT)
+        return b;
+    else
+        return (b - OSPFS_NDIRECT) % OSPFS_NINDIRECT;
 }
-
 
 // add_block(ospfs_inode_t *oi)
 //   Adds a single data block to a file, adding indirect and
