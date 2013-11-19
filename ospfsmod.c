@@ -1442,13 +1442,13 @@ ospfs_create(struct inode *dir, struct dentry *dentry, int mode, struct nameidat
 	/* EXERCISE: Your code here. */
 	//Check type of directory
 	if (dir_oi->oi_ftype != OSPFS_FTYPE_DIR)
-		return –EIO;
+		return -EIO;
 	
 	if (dentry->d_name.len > OSPFS_MAXNAMELEN) 
-		return –ENAMETOOLONG;
+		return -ENAMETOOLONG; 
 
-	if (find_dir_entry(dir_oi, dentry->d_name, name, dentry->d_name.len) != NULL)
-		return –EEXIST;
+	if (find_dir_entry(dir_oi, dentry->d_name.name, dentry->d_name.len) != NULL)
+		return -EEXIST;
 
 	//Get a free inode
 	
