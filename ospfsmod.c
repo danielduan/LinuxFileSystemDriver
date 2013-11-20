@@ -1612,20 +1612,46 @@ ospfs_follow_link(struct dentry *dentry, struct nameidata *nd)
 		(ospfs_symlink_inode_t *) ospfs_inode(dentry->d_inode->i_ino);
 	// Exercise: Your code here.
 
-	//Find ? and : in our entry
-	//If not a conditional link, return
-	if(oi->oi_symlink[0] != '?'){
+	//If not a conditional link, return regular symlink
+	if(strncmp(oi->oi_symlink,"root?",5) != 0){
 		nd_set_link(nd, oi->oi_symlink);
 		return (void *) 0;
 	}
 
+	//Find ? index in our entry
+	char *qmark = strchr (oi->oi_symlink, '?');
+	int qmark_index = qmark - (oi->oi_symlink);
+
+	//Find : index in our entry
+	char *colon = strchr (oi->oi_symlink, ':');
+	int colon_index = colon - (oi->oi_symlink);
+
+	//Initialize what new link will be
+	char* new_link = kmalloc(oi->oi_size, GFP_ATOMIC);
+
 	//If we're root, return the start of the path
-    else if(current->uid == 0){
-        nd_set_link(nd, oi->oi_symlink + 1);
+    if(current->uid == 0){
+    	//Copy data to new_link
+    	int i = 0;
+    	int j = 0;
+    	for(i = (qmark_index+1); i < colon_index; i++){
+    		new_link[j] = oi->oi_symlink[i];
+    		j++;
+    	}
+    	new_link[colon_index] = '\0';
+        nd_set_link(nd, new_link);
         return (void *) 0;
 	}
-	//TO BE IMPLEMETED, NOT WORKING RIGHT NOW
-
+	//else we're not root
+    int i = 0;
+    int j = 0;
+	for(i = (colon_index+1); oi->oi_symlink[i] != '\0'; i++){
+		new_link[j] = oi->oi_symlink[i];
+		j++;
+	}
+	new_link[j] = '\0';
+    nd_set_link(nd, new_link);
+	return (void *) 0;
 }
 
 

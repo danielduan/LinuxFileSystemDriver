@@ -13,7 +13,7 @@
 # Partner 1
 Name: Jia Dan Duan
 Student ID: 604022222
-Email: 
+Email: danielduan88@yahoo.com
 
 # Partner 2
 Name: Kenneth Shi
@@ -24,4 +24,7 @@ Email: kenshi@ucla.edu
 #Extra credit problem: none
 
 # Add any other information you'd like us to know below this line.
-A lot of our code was borrowed from discussion notes, but we made sure we understood what each line was doing. We had trouble implementing conditional links, and was unsure how to fix the issue. 
+
+A lot of our code was borrowed from discussion notes, but we made sure we understood what each line was doing. We had trouble implementing conditional links, mainly because we kept using wrong indexes, but we think the issue is not fixed. We tested it using the test case on the lab page and that worked, so we didn't do further testing.
+
+We also have an issue
