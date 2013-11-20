@@ -27,4 +27,4 @@ Email: kenshi@ucla.edu
 
 A lot of our code was borrowed from discussion notes, but we made sure we understood what each line was doing. We had trouble implementing conditional links, mainly because we kept using wrong indexes, but we think the issue is not fixed. We tested it using the test case on the lab page and that worked, so we didn't do further testing.
 
-We also have an issue
+We also have an issue our add blocks segfaulting, but didn't know how to debug the issue thoroughly. When we run tests the first time through, they pass, but when we attempt to run tests the second time, our add blocks function messes up a bit and seems to segfault somewhere. Our remove block seems to work fine though. 
