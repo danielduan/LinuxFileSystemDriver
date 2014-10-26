@@ -12,13 +12,13 @@
 
 # Partner 1
 Name: Jia Dan Duan
-Student ID: 604022222
-Email: danielduan88@yahoo.com
+Student ID: 
+Email: 
 
 # Partner 2
 Name: Kenneth Shi
-Student ID: 304063313
-Email: kenshi@ucla.edu
+Student ID: 
+Email: 
 
 # Extra credit problems
 #Extra credit problem: none
